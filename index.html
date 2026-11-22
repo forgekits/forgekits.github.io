@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>forgekits – Production kits for AI agents</title>
+<meta name="description" content="Small, tested starter kits that take agents built on the Claude Agent SDK from tutorial to production: budgets, circuit breakers, tool policies, audit logs, evals and deployment. No framework.">
+<link rel="canonical" href="https://forgekits.github.io/">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f7f7f5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#121316" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website">
+<meta property="og:title" content="forgekits – Production kits for AI agents">
+<meta property="og:description" content="Small, tested starter kits for the Claude Agent SDK: a free Lite kit (TypeScript and Python, MIT) and a Pro kit with budgets, circuit breaker, tool policy, audit log, evals and deployment recipes.">
+<meta property="og:url" content="https://forgekits.github.io/">
+<meta name="twitter:card" content="summary">
+<style>
+:root{
+  --bg:#f7f7f5;--surface:#ffffff;--text:#1b1b1f;--muted:#5c5f66;--border:#e3e4e8;
+  --accent:#b5471c;--accent-ink:#ffffff;--accent-soft:#fbe9df;--code-bg:#f0f0ee;--ok:#2f7d4f;
+  --shadow:0 1px 2px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#121316;--surface:#1a1b1f;--text:#e8e8ea;--muted:#a0a3ab;--border:#2a2c32;
+    --accent:#f08a4b;--accent-ink:#1b1b1f;--accent-soft:#2b1f18;--code-bg:#1f2025;--ok:#6fcf97;
+    --shadow:none;
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration-thickness:1px;text-underline-offset:2px}
+a:hover{text-decoration-thickness:2px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+code,pre,kbd{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;font-size:.92em}
+code{background:var(--code-bg);padding:.1em .35em;border-radius:4px}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:1rem;overflow-x:auto;line-height:1.5;margin:0}
+pre code{background:none;padding:0;font-size:.88rem}
+.wrap{max-width:68rem;margin:0 auto;padding:0 1rem}
+.skip{position:absolute;left:-999px;top:0;background:var(--surface);padding:.5rem 1rem;border:1px solid var(--border);z-index:10}
+.skip:focus{left:1rem;top:1rem}
+header.site{border-bottom:1px solid var(--border);background:var(--bg)}
+header.site .wrap{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;padding-top:.9rem;padding-bottom:.9rem}
+.brand{display:flex;align-items:center;gap:.6rem;color:var(--text);text-decoration:none;font-weight:700;font-size:1.1rem}
+.brand svg{width:28px;height:28px;flex:none}
+nav ul{display:flex;gap:1.1rem;list-style:none;margin:0;padding:0;flex-wrap:wrap}
+nav a{color:var(--text);text-decoration:none;font-size:.95rem}
+nav a:hover{text-decoration:underline}
+section{padding:3.5rem 0;border-bottom:1px solid var(--border)}
+section:last-of-type{border-bottom:0}
+h1{font-size:clamp(2rem,5vw,3rem);line-height:1.15;margin:0 0 1rem;letter-spacing:-.01em}
+h2{font-size:clamp(1.5rem,3.2vw,2rem);line-height:1.2;margin:0 0 1rem;letter-spacing:-.01em}
+h3{font-size:1.15rem;margin:0 0 .5rem}
+.lede{font-size:1.2rem;color:var(--muted);max-width:44rem;margin:0 0 1.75rem}
+.muted{color:var(--muted)}
+.small{font-size:.9rem}
+.actions{display:flex;gap:.75rem;flex-wrap:wrap;align-items:center}
+.btn{display:inline-block;padding:.7rem 1.1rem;border-radius:8px;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);font-weight:600;text-decoration:none;line-height:1.2}
+.btn:hover{filter:brightness(1.05)}
+.btn.secondary{background:transparent;color:var(--text);border-color:var(--border)}
+.btn.secondary:hover{border-color:var(--text);filter:none}
+.facts{display:flex;gap:1.5rem;flex-wrap:wrap;margin-top:1.75rem;color:var(--muted);font-size:.95rem}
+.facts span::before{content:"";display:inline-block;width:.5rem;height:.5rem;border-radius:50%;background:var(--accent);margin-right:.5rem;vertical-align:middle}
+.grid{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr))}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.25rem;box-shadow:var(--shadow)}
+.card p:last-child{margin-bottom:0}
+.cols{display:grid;gap:1.5rem;grid-template-columns:repeat(auto-fit,minmax(18rem,1fr));align-items:start}
+ul.plain{padding-left:1.1rem;margin:0}
+ul.plain li{margin:.35rem 0}
+.table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:34rem;font-size:.95rem}
+th,td{text-align:left;padding:.65rem .9rem;border-bottom:1px solid var(--border);vertical-align:top}
+th{font-weight:600;background:var(--code-bg)}
+tr:last-child td{border-bottom:0}
+td.c{text-align:center;white-space:nowrap}
+.yes{color:var(--ok);font-weight:700}
+.no{color:var(--muted)}
+.price{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr));margin:1.5rem 0}
+.price .card h3{display:flex;justify-content:space-between;align-items:baseline;gap:1rem}
+.price .amount{font-size:1.6rem;font-weight:700;letter-spacing:-.01em}
+.notice{border-left:4px solid var(--accent);background:var(--accent-soft);padding:1rem 1.25rem;border-radius:0 8px 8px 0;margin:1.5rem 0}
+.notice p{margin:.25rem 0}
+details{border:1px solid var(--border);border-radius:8px;background:var(--surface);padding:0 1rem;margin:.6rem 0}
+summary{cursor:pointer;padding:.85rem 0;font-weight:600}
+details[open] summary{border-bottom:1px solid var(--border)}
+details p{margin:.9rem 0}
+footer.site{padding:2.5rem 0 3rem;color:var(--muted);font-size:.9rem}
+footer.site ul{display:flex;gap:1.25rem;flex-wrap:wrap;list-style:none;padding:0;margin:0 0 1rem}
+footer.site a{color:var(--text)}
+@media (max-width:40rem){
+  section{padding:2.5rem 0}
+  .lede{font-size:1.08rem}
+  pre{padding:.8rem}
+}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site">
+  <div class="wrap">
+    <a class="brand" href="/" aria-label="forgekits home">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="12" fill="#b5471c"/><text x="32" y="43" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="30" font-weight="700" fill="#fff" text-anchor="middle">fk</text></svg>
+      forgekits
+    </a>
+    <nav aria-label="Main">
+      <ul>
+        <li><a href="#lite">Lite kit</a></li>
+        <li><a href="#compare">Lite vs Pro</a></li>
+        <li><a href="#pro">Pro kit</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="https://github.com/forgekits">GitHub</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<section id="top">
+  <div class="wrap">
+    <h1>Production kits for AI agents.</h1>
+    <p class="lede">Small, tested starter kits that take agents built on the Claude Agent SDK from tutorial to production: budgets, circuit breakers, tool policies, audit logs, evals and deployment. Ordinary functions you can read in an afternoon. No framework.</p>
+    <div class="actions">
+      <a class="btn" href="https://github.com/forgekits/agent-sdk-kit-lite">Get the Lite kit, free</a>
+      <a class="btn secondary" href="https://github.com/forgekits/agent-sdk-kit-lite-py">Python edition</a>
+      <a class="btn secondary" href="#pro">About the Pro kit</a>
+    </div>
+    <div class="facts">
+      <span>Lite is MIT licensed</span>
+      <span>TypeScript and Python</span>
+      <span>Over 200 unit tests across the kits, none needs an API key</span>
+      <span>CI on Linux and Windows</span>
+    </div>
+  </div>
+</section>
+
+<section id="why">
+  <div class="wrap">
+    <h2>Why the SDK alone is not enough</h2>
+    <p class="lede">The Claude Agent SDK gives you <code>maxBudgetUsd</code> and <code>maxTurns</code>, and they work. They are per query. Three things are missing once an agent runs unattended.</p>
+    <div class="grid">
+      <div class="card">
+        <h3>Nothing spans runs</h3>
+        <p>A hundred queries can each spend their cap. Daily, monthly and per-customer budgets have to be yours, and two concurrent runs must not overshoot together.</p>
+      </div>
+      <div class="card">
+        <h3>Nothing remembers failures</h3>
+        <p>If the API has been failing for ten minutes, the next run tries anyway. A circuit breaker that survives a restart stops the bleeding.</p>
+      </div>
+      <div class="card">
+        <h3>Nothing records decisions</h3>
+        <p>Which tool was called, with which arguments, on behalf of which customer, and whether it was allowed. A policy with an audit log answers that.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="lite">
+  <div class="wrap">
+    <h2>Start with the Lite kit</h2>
+    <p class="lede">What you would write in the first two days anyway, already written and tested. About 750 lines of commented code. Clone it, read it, delete what you do not need.</p>
+    <div class="cols">
+      <div>
+        <h3>What is in the box</h3>
+        <ul class="plain">
+          <li><strong>Config</strong>: environment variables validated with a schema, every problem listed at once, a tiny <code>.env</code> loader.</li>
+          <li><strong>Tools</strong>: <code>calculate</code> (a safe parser, no <code>eval</code>), <code>save_note</code> and <code>search_notes</code>, plus your own via <code>extraTools</code>.</li>
+          <li><strong>Agent</strong>: a locked-down run wrapper. No built-in tools, no host settings, pre-approved tools only, turn and budget limits, an audit hook.</li>
+          <li><strong>Report</strong>: a flat summary with cost, tokens and per-model usage, and one sentence that explains a failure. An invalid API key is reported as a failure, not as success.</li>
+          <li><strong>CLI, tests and CI</strong>: answer on stdout, report on stderr; unit tests that never call the API; GitHub Actions on Linux and Windows.</li>
+        </ul>
+        <p class="small muted">Requirements: Node.js 20 or later, or Python 3.10 or later, and an Anthropic API key.</p>
+      </div>
+      <div>
+        <h3>TypeScript</h3>
+<pre><code>git clone https://github.com/forgekits/agent-sdk-kit-lite my-agent &amp;&amp; cd my-agent
+npm ci
+npm run check           # typecheck + 46 unit tests, no API key needed
+cp .env.example .env    # ANTHROPIC_API_KEY=sk-ant-...
+npm run agent -- "What is (1200 * 1.081) / 12? Then remember that my rent is 1200."</code></pre>
+        <h3 style="margin-top:1.25rem">Python</h3>
+<pre><code>git clone https://github.com/forgekits/agent-sdk-kit-lite-py my-agent &amp;&amp; cd my-agent
+python -m venv .venv &amp;&amp; source .venv/bin/activate
+pip install -e ".[dev]"
+ruff check . &amp;&amp; mypy &amp;&amp; pytest -q    # no API key needed
+cp .env.example .env                 # ANTHROPIC_API_KEY=sk-ant-...
+agent-kit "What is (1200 * 1.081) / 12? Then remember that my rent is 1200."</code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="compare">
+  <div class="wrap">
+    <h2>Lite vs Pro</h2>
+    <p class="lede">Pro contains everything in Lite and adds the layer the SDK does not give you. All Pro state lives in one SQLite file through <code>node:sqlite</code>: no extra service, no native build.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th scope="col">Capability</th><th scope="col">Lite</th><th scope="col">Pro</th></tr></thead>
+        <tbody>
+          <tr><td>Validated config with <code>.env</code> loader</td><td class="c yes">yes</td><td class="c yes">yes</td></tr>
+          <tr><td>In-process tools, plus your own</td><td class="c yes">yes</td><td class="c yes">yes</td></tr>
+          <tr><td>Locked-down run wrapper, per-run turn and budget limits</td><td class="c yes">yes</td><td class="c yes">yes</td></tr>
+          <tr><td>Audit hook, cost report, CLI, CI</td><td class="c yes">yes</td><td class="c yes">yes</td></tr>
+          <tr><td>Budgets per day, month and customer, reserve-then-settle, warnings</td><td class="c no">–</td><td class="c yes">yes</td></tr>
+          <tr><td>Circuit breaker that survives restarts</td><td class="c no">–</td><td class="c yes">yes</td></tr>
+          <tr><td>Tool policy: ordered allow, deny and confirm rules with argument checks</td><td class="c no">–</td><td class="c yes">yes</td></tr>
+          <tr><td>Audit log of every decision with redacted arguments and outcome</td><td class="c no">–</td><td class="c yes">yes</td></tr>
+          <tr><td>Conversations that resume, transcript with cost per turn</td><td class="c no">–</td><td class="c yes">yes</td></tr>
+          <tr><td>Prometheus metrics at <code>/metrics</code>, no dependency</td><td class="c no">–</td><td class="c yes">yes</td></tr>
+          <tr><td>Eval harness: JSON suites, budgets, baseline regressions, weekly workflow</td><td class="c no">–</td><td class="c yes">yes</td></tr>
+          <tr><td>HTTP service with Bearer auth, admin CLI</td><td class="c no">–</td><td class="c yes">yes</td></tr>
+          <tr><td>Docker, Compose, Fly.io and systemd recipes, operations handbook</td><td class="c no">–</td><td class="c yes">yes</td></tr>
+          <tr><td>Languages</td><td class="c">TypeScript, Python</td><td class="c">TypeScript<br><span class="small muted">Python planned</span></td></tr>
+          <tr><td>License</td><td class="c">MIT</td><td class="c">Commercial, one-time</td></tr>
+          <tr><td>Unit tests, all without an API key</td><td class="c">46 (TS), 50 (Python)</td><td class="c">107</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="pro">
+  <div class="wrap">
+    <h2>The Pro kit</h2>
+    <p class="lede">One-time purchase. Access to the private GitHub repository, a zip download and a license key, delivered within minutes. Updates for 12 months. Full refund within 14 days, no questions asked.</p>
+    <div class="price">
+      <div class="card">
+        <h3><span>Solo</span><span class="amount">39 USD</span></h3>
+        <p>One person. Use it in any number of your own products, commercial or not.</p>
+      </div>
+      <div class="card">
+        <h3><span>Team</span><span class="amount">99 USD</span></h3>
+        <p>Up to five people in one organization. Repository access for up to five GitHub accounts.</p>
+      </div>
+    </div>
+    <div class="notice" role="status">
+      <p><strong>Not on sale yet.</strong> Version 0.2.0 is complete and covered by 107 unit tests. The store opens shortly; until then, the Lite kit is the best place to start.</p>
+      <p><a href="https://github.com/forgekits/agent-sdk-kit-lite">Watch the Lite repository</a> to be notified when Pro is released.</p>
+    </div>
+    <h3>Honest limits</h3>
+    <ul class="plain">
+      <li>The confirm path of the tool policy and the eval suite have been tested with a fake runner, not yet against the live API. The changelog says exactly what changed and when.</li>
+      <li>Pro is TypeScript only. It needs Node.js 22.13 or later for <code>node:sqlite</code>.</li>
+      <li>The Pro kit is a template you fork and edit, not a package you install. You keep <code>src/pro/</code> as is and wire your tools and service around it.</li>
+      <li>Do not resell the kit itself. Everything you build with it is yours.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <h2>Questions</h2>
+    <details>
+      <summary>Is this a framework?</summary>
+      <p>No. Both kits are ordinary functions in a repository you own. There is no runtime, no plugin system and no abstraction over the SDK. If you want to change how a budget is reserved, you edit <code>budget.ts</code>.</p>
+    </details>
+    <details>
+      <summary>Do I need an Anthropic API key?</summary>
+      <p>Yes. The kits refuse to start without <code>ANTHROPIC_API_KEY</code>. Without that guard the SDK would fall back to a Claude Code login on the host, which Anthropic does not permit for third-party products.</p>
+    </details>
+    <details>
+      <summary>How are the claims on this page verified?</summary>
+      <p>Every feature named here is covered by a unit test that runs in CI without an API key: 46 tests in the TypeScript Lite kit, 50 in the Python Lite kit, 107 in Pro. The Lite test suites are public; run <code>npm run check</code> or <code>pytest -q</code> after cloning.</p>
+    </details>
+    <details>
+      <summary>What does the Pro license allow?</summary>
+      <p>Use in any number of your own products, commercial or not, by the licensed people (one for Solo, up to five for Team). You may not resell or redistribute the kit itself. Updates are included for 12 months after purchase; the kit keeps working after that.</p>
+    </details>
+    <details>
+      <summary>Is there a Python version of Pro?</summary>
+      <p>Not yet. The Python Lite kit is free today and mirrors the TypeScript one. A Python Pro kit is planned; buyers of Pro will hear about it first.</p>
+    </details>
+    <details>
+      <summary>How do I report a security issue?</summary>
+      <p>Open a <a href="https://github.com/forgekits/agent-sdk-kit-lite/security/advisories/new">private security advisory</a> on the Lite repository, also for the Pro kit. Please do not open a public issue for a vulnerability. You will get an acknowledgement within 72 hours.</p>
+    </details>
+    <details>
+      <summary>Who makes this?</summary>
+      <p>forgekits is a small independent publisher of developer kits. It is not affiliated with Anthropic. Questions and bug reports go through GitHub issues on the Lite repositories.</p>
+    </details>
+  </div>
+</section>
+
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <ul>
+      <li><a href="https://github.com/forgekits">GitHub</a></li>
+      <li><a href="https://github.com/forgekits/agent-sdk-kit-lite">Lite kit (TypeScript)</a></li>
+      <li><a href="https://github.com/forgekits/agent-sdk-kit-lite-py">Lite kit (Python)</a></li>
+      <li><a href="https://github.com/forgekits/agent-sdk-kit-lite/security/advisories/new">Security</a></li>
+    </ul>
+    <p>forgekits is independent and not affiliated with Anthropic. Claude is a trademark of Anthropic, PBC. This site sets no cookies and loads nothing from third parties.</p>
+  </div>
+</footer>
+</body>
+</html>
